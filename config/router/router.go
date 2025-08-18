@@ -1,40 +1,43 @@
 package router
 
 import (
-	"CMS/app/controllers/managercontrollers"
-	"CMS/app/controllers/studentcontrollers"
-	usercontrollers "CMS/app/controllers/userControllers"
-
 	"github.com/gin-gonic/gin"
+
+	"CMS/app/controllers/managerControllers"
+	"CMS/app/controllers/studentControllers"
+	usercontrollers "CMS/app/controllers/userControllers"
+	"CMS/app/midwares"
 )
 
 func Init(r *gin.Engine) {
-    const pre = "/api"
-    api := r.Group(pre)
-    {
-        // User 路由组
-        user := api.Group("/user")
-        {
-            user.POST("/login", usercontrollers.Login)
-            user.POST("/reg", usercontrollers.Register)
-        }
+	const pre = "/api"
+	api := r.Group(pre)
+	{
+		// User 路由组
+		user := api.Group("/user")
+		{
+			user.POST("/login", usercontrollers.Login)
+			user.POST("/reg", usercontrollers.Register)
+		}
 
-        // Student 路由组
-        student := api.Group("/student")
-        {
-            student.POST("/post", studentcontrollers.Release)
-            student.GET("/post", studentcontrollers.Show)
-            student.DELETE("/post", studentcontrollers.Delete)
-            student.PUT("/post", studentcontrollers.Update)
-            student.POST("/report-post", studentcontrollers.Report)
-            student.GET("/report-post", studentcontrollers.ShowReportedPost)
-        }
+		// Student 路由组
+		student := api.Group("/student")
+		student.Use(midwares.AuthMiddleware())
+		{
+			student.POST("/post", studentControllers.Release)
+			student.GET("/post", studentControllers.Show)
+			student.DELETE("/post", studentControllers.Delete)
+			student.PUT("/post", studentControllers.Update)
+			student.POST("/report-post", studentControllers.Report)
+			student.GET("/report-post", studentControllers.ShowReportedPost)
+		}
 
-        // Admin 路由组
-        admin := api.Group("/admin")
-        {
-            admin.GET("/report", managercontrollers.ShowReportedPosts)
-            admin.POST("/report", managercontrollers.ReportedPostHandling)
-        }
-    }
+		// Admin 路由组
+		admin := api.Group("/admin")
+		admin.Use(midwares.AuthMiddleware())
+		{
+			admin.GET("/report", managerControllers.ShowReportedPosts)
+			admin.POST("/report", managerControllers.ReportedPostHandling)
+		}
+	}
 }

@@ -8,6 +8,7 @@ import (
 
 var Config = viper.New()
 
+// 读取配置文件
 func init() {
 
 	Config.SetConfigName("config")

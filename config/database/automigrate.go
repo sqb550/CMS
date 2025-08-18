@@ -1,9 +1,9 @@
 package database
 
 import (
-	"CMS/app/models"
-
 	"gorm.io/gorm"
+
+	"CMS/app/models"
 )
 
 func autoMigrate(db *gorm.DB) error {
