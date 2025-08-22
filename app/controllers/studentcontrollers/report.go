@@ -11,11 +11,15 @@ import (
 
 type ReportData struct {
 	PostID int    `json:"post_id" binding:"required"`
-	UserID int    `json:"user_id" binding:"required"`
 	Reason string `json:"reason" binding:"required"`
 }
 
 func Report(c *gin.Context) {
+	UserID, exists := c.Get("user_id")
+	if !exists {
+		apiexception.AbortWithException(c, apiexception.USerIDError, nil)
+	}
+	UserIDInt, _ := UserID.(int)
 
 	var data ReportData
 	err := c.ShouldBindJSON(&data)
@@ -35,7 +39,7 @@ func Report(c *gin.Context) {
 		apiexception.AbortWithException(c, apiexception.ServerError, err)
 	}
 	err = studentservices.AddReportedPost(&models.ReportedPost{
-		UserID:   data.UserID,
+		UserID:   UserIDInt,
 		PostID:   data.PostID,
 		Content:  PostResult.Content,
 		Reason:   data.Reason,

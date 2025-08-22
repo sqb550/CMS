@@ -10,7 +10,6 @@ import (
 )
 
 type HandleData struct {
-	UserID   int `json:"user_id" binding:"required"`
 	ReportID int `json:"report_id" binding:"required"`
 	Approval int `json:"approval" binding:"required"`
 }
@@ -24,16 +23,6 @@ func ReportedPostHandling(c *gin.Context) {
 		apiexception.AbortWithException(c, apiexception.ParamError, err)
 		return
 	}
-	flag, err := managerservices.ManagerJudge(data.UserID) //判断该用户是否为管理员
-	if err != nil {
-		apiexception.AbortWithException(c, apiexception.ServerError, err)
-		return
-	}
-	if !flag {
-		apiexception.AbortWithException(c, apiexception.NotManagerError, err)
-		return
-	}
-
 	// 开启事务
 	tx := database.DB.Begin()
 	if tx.Error != nil {

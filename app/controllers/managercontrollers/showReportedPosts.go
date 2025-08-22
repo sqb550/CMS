@@ -8,10 +8,6 @@ import (
 	"CMS/app/utils"
 )
 
-type User struct {
-	UserID int `form:"user_id" json:"user_id" binding:"required"`
-}
-
 type ReportedPostData struct {
 	ReportID int    `json:"report_id"`
 	Username string `json:"username"`
@@ -25,22 +21,6 @@ type ReportedPostList struct {
 }
 
 func ShowReportedPosts(c *gin.Context) {
-
-	var data User
-	err := c.ShouldBindQuery(&data)
-	if err != nil {
-		apiexception.AbortWithException(c, apiexception.ParamError, err)
-		return
-	}
-	flag, err := managerservices.ManagerJudge(data.UserID) //判断该用户是否为管理员
-	if err != nil {
-		apiexception.AbortWithException(c, apiexception.ServerError, err)
-		return
-	}
-	if !flag {
-		apiexception.AbortWithException(c, apiexception.NotManagerError, err)
-		return
-	}
 
 	ReportedPosts, err := managerservices.ReportedPostShow() //返回所有status为0的帖子
 	if err != nil {

@@ -7,16 +7,14 @@ import (
 	"gorm.io/gorm"
 )
 
-func ManagerJudge(UserID int) (bool, error) {
+func SeekUserType(UserID int) (int, error) {
 	var data models.User
 	result := database.DB.Where("ID=?", UserID).First(&data)
 	if result.Error != nil {
-		return false, result.Error
-	} else if data.UserType == 1 {
-		return false, nil
-	} else {
-		return true, nil
+		return 0, result.Error
 	}
+
+	return data.UserType, nil
 }
 
 func ReportedPostShow() ([]models.ReportedPost, error) {

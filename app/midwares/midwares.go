@@ -2,6 +2,7 @@ package midwares
 
 import (
 	apiexception "CMS/app/apiException"
+	managerservices "CMS/app/services/managerServices"
 	"CMS/app/utils"
 	"errors"
 
@@ -43,6 +44,32 @@ func AuthMiddleware() gin.HandlerFunc {
 			c.Abort()
 			return
 		}
+		c.Set("user_id", user_id)
 		c.Next()
+	}
+}
+
+// 管理员身份鉴权中间件
+func AdminAuthMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		UserID, exists := c.Get("user_id")
+		if !exists {
+			apiexception.AbortWithException(c, apiexception.USerIDError, nil)
+		}
+		UserIDInt, _ := UserID.(int)
+		UserType, err := managerservices.SeekUserType(UserIDInt)
+		if err != nil {
+			apiexception.AbortWithException(c, apiexception.ServerError, err)
+			c.Abort()
+			return
+		}
+		if UserType == 1 {
+			apiexception.AbortWithException(c, apiexception.NotManagerError, nil)
+			c.Abort()
+			return
+
+		}
+		c.Next()
+
 	}
 }

@@ -8,9 +8,6 @@ import (
 	"CMS/app/utils"
 )
 
-type ReportedPostData struct {
-	UserID int `form:"user_id" json:"user_id"`
-}
 type ShowReportedPostData struct {
 	PostID  int    `json:"post_id"`
 	Content string `json:"content"`
@@ -24,13 +21,12 @@ type ReportedPostList struct {
 
 func ShowReportedPost(c *gin.Context) {
 
-	var data ReportedPostData
-	err := c.ShouldBindQuery(&data)
-	if err != nil {
-		apiexception.AbortWithException(c, apiexception.ParamError, err)
-		return
+	UserID, exists := c.Get("user_id")
+	if !exists {
+		apiexception.AbortWithException(c, apiexception.USerIDError, nil)
 	}
-	ReportedPost, err := studentservices.ShowReportedPost(data.UserID) //获取举报人id为data，userid所举报的所有帖子
+	UserIDInt, _ := UserID.(int)
+	ReportedPost, err := studentservices.ShowReportedPost(UserIDInt) //获取举报人id为data，userid所举报的所有帖子
 	if err != nil {
 		apiexception.AbortWithException(c, apiexception.ServerError, err)
 		return

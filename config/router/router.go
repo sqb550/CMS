@@ -30,14 +30,16 @@ func Init(r *gin.Engine) {
 			student.PUT("/post", studentControllers.Update)
 			student.POST("/report-post", studentControllers.Report)
 			student.GET("/report-post", studentControllers.ShowReportedPost)
+			student.POST("/likes",studentControllers.LikePost)
+			student.GET("/likes",studentControllers.GetPostLikes)
 		}
 
 		// Admin 路由组
 		admin := api.Group("/admin")
 		admin.Use(midwares.AuthMiddleware())
 		{
-			admin.GET("/report", managerControllers.ShowReportedPosts)
-			admin.POST("/report", managerControllers.ReportedPostHandling)
+			admin.GET("/report", midwares.AdminAuthMiddleware(), managerControllers.ShowReportedPosts)
+			admin.POST("/report", midwares.AdminAuthMiddleware(), managerControllers.ReportedPostHandling)
 		}
 	}
 }

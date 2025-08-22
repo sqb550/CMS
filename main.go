@@ -4,6 +4,7 @@ import (
 	"log"
 
 	"CMS/app/midwares"
+	"CMS/app/utils"
 	"CMS/config/database"
 	"CMS/config/router"
 
@@ -14,6 +15,7 @@ import (
 
 func main() {
 	database.Init()
+	utils.InitRedis()
 
 	r := gin.Default()
 	store := memstore.NewStore([]byte("secretkey"))
@@ -21,7 +23,7 @@ func main() {
 	r.Use(midwares.ErrHandler())
 
 	router.Init(r)
-
+	go utils.SyncCacheToDB()
 	err := r.Run(":8080")
 	if err != nil {
 		log.Fatal("Server start error:", err)

@@ -12,7 +12,6 @@ import (
 
 type ReleaseData struct {
 	Content string `json:"content" binding:"required"`
-	UserID  int    `json:"user_id" binding:"required"`
 }
 type PostList struct {
 	PostList []models.Post `json:"post_list"`
@@ -24,17 +23,20 @@ type PageQuery struct {
 }
 
 type DeleteData struct {
-	UserID int `form:"user_id" json:"user_id" binding:"required"`
 	PostID int `form:"post_id" json:"id" binding:"required"`
 }
 
 type UpdateData struct {
 	ID      uint   `json:"post_id" binding:"required"`
-	UserID  int    `json:"user_id" binding:"required"`
 	Content string `json:"content" binding:"required"`
 }
 
 func Release(c *gin.Context) {
+	UserID, exists := c.Get("user_id")
+	if !exists {
+		apiexception.AbortWithException(c, apiexception.USerIDError, nil)
+	}
+	UserIDInt, _ := UserID.(int)
 
 	var data ReleaseData
 	err := c.ShouldBindJSON(&data)
@@ -45,7 +47,7 @@ func Release(c *gin.Context) {
 	//将帖子信息添加到数据表post
 	err = studentservices.ReleasePost(&models.Post{
 		Content: data.Content,
-		UserID:  data.UserID,
+		UserID:  UserIDInt,
 	})
 	if err != nil {
 		apiexception.AbortWithException(c, apiexception.ServerError, err)
@@ -95,6 +97,11 @@ func Delete(c *gin.Context) {
 }
 
 func Update(c *gin.Context) {
+	UserID, exists := c.Get("user_id")
+	if !exists {
+		apiexception.AbortWithException(c, apiexception.USerIDError, nil)
+	}
+	UserIDInt, _ := UserID.(int)
 	var data UpdateData
 	err := c.ShouldBindJSON(&data) //绑定
 	if err != nil {
@@ -104,7 +111,7 @@ func Update(c *gin.Context) {
 
 	err = studentservices.Update(&models.Post{
 		ID:      data.ID,
-		UserID:  data.UserID,
+		UserID:  UserIDInt,
 		Content: data.Content,
 	}) //更新数据
 	if err != nil {
