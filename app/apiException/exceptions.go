@@ -29,7 +29,7 @@ var (
 	PostNotFound        = NewError(200509, "该帖子不存在")
 	PasswordError       = NewError(200510, "密码错误")
 	USerIDError         = NewError(200511, "user_id传递失败")
-	LikeError           = NewError(200512,"点赞失败")
+	LikeError           = NewError(200512, "点赞失败")
 
 	NotFound = NewError(200404, http.StatusText(http.StatusNotFound))
 )

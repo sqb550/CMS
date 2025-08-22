@@ -57,7 +57,7 @@ func SetPostToCache(post *models.Post) error {
 // 定时任务同步缓存到数据库
 func SyncCacheToDB() {
 	for {
-		
+
 		keys, err := redisClient.Keys(ctx, "post:*").Result()
 		if err != nil {
 			log.Printf("Error getting keys: %v\n", err)
@@ -66,7 +66,7 @@ func SyncCacheToDB() {
 		}
 
 		for _, key := range keys {
-		
+
 			val, err := redisClient.Get(ctx, key).Result()
 			if err != nil {
 				log.Printf("Error getting post data from cache: %v\n", err)
@@ -80,7 +80,6 @@ func SyncCacheToDB() {
 				continue
 			}
 
-		
 			err = database.DB.Model(&models.Post{}).Where("id =?", post.ID).Update("likes", post.Likes).Error
 			if err != nil {
 				log.Printf("Error updating database: %v\n", err)

@@ -30,8 +30,8 @@ func Init(r *gin.Engine) {
 			student.PUT("/post", studentControllers.Update)
 			student.POST("/report-post", studentControllers.Report)
 			student.GET("/report-post", studentControllers.ShowReportedPost)
-			student.POST("/likes",studentControllers.LikePost)
-			student.GET("/likes",studentControllers.GetPostLikes)
+			student.POST("/likes", studentControllers.LikePost)
+			student.GET("/likes", studentControllers.GetPostLikes)
 		}
 
 		// Admin 路由组

@@ -4,7 +4,7 @@ import (
 	apiexception "CMS/app/apiException"
 	studentservices "CMS/app/services/studentServices"
 	"CMS/app/utils"
-	
+
 	"strconv"
 	"strings"
 
@@ -25,33 +25,30 @@ func LikePost(c *gin.Context) {
 	}
 	key := utils.GetPostCacheKey(uint(data.PostID))
 	trimmed := strings.TrimPrefix(key, "post:")
-    post_id, _:= strconv.ParseUint(trimmed, 10, 64)
-	postID:=uint(post_id)
-	post,ok,err:=utils.GetPostFromCache(postID)
-	if err!=nil{
-		apiexception.AbortWithException(c,apiexception.ServerError,err)
+	post_id, _ := strconv.ParseUint(trimmed, 10, 64)
+	postID := uint(post_id)
+	post, ok, err := utils.GetPostFromCache(postID)
+	if err != nil {
+		apiexception.AbortWithException(c, apiexception.ServerError, err)
 	}
-	if !ok{
-		dbPost,err:=studentservices.GetPost(data.PostID)
-		if err!=nil{
-			apiexception.AbortWithException(c,apiexception.ServerError,err)
+	if !ok {
+		dbPost, err := studentservices.GetPost(data.PostID)
+		if err != nil {
+			apiexception.AbortWithException(c, apiexception.ServerError, err)
 			return
 		}
 
 		err = utils.SetPostToCache(dbPost)
 		if err != nil {
-			apiexception.AbortWithException(c,apiexception.ServerError,err)
+			apiexception.AbortWithException(c, apiexception.ServerError, err)
 			return
 		}
 	}
 	post.Likes++
-	err=utils.SetPostToCache(post)
-	if err!=nil{
-		apiexception.AbortWithException(c,apiexception.ServerError,err)
+	err = utils.SetPostToCache(post)
+	if err != nil {
+		apiexception.AbortWithException(c, apiexception.ServerError, err)
 	}
 
-
-	
-	utils.JsonSuccessResponse(c,nil)
+	utils.JsonSuccessResponse(c, nil)
 }
-
