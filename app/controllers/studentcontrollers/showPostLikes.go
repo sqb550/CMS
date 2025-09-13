@@ -9,24 +9,24 @@ import (
 )
 
 type PostData struct {
-	PostID int `json:"post_id"`
+	PostID int `form:"post_id" json:"post_id"`
 }
 
 func GetPostLikes(c *gin.Context) {
 	var data PostData
-	err := c.ShouldBindJSON(&data)
+	err := c.ShouldBindQuery(&data)
 	if err != nil {
 		apiexception.AbortWithException(c, apiexception.ParamError, err)
 		return
 	}
 
-	post, ok, err := utils.GetPostFromCache(uint(data.PostID))
+	PostLikes, ok, err := utils.GetPostFromCache(uint(data.PostID),c)
 	if err != nil {
 		apiexception.AbortWithException(c, apiexception.ServerError, err)
 		return
 	}
 	if ok {
-		utils.JsonSuccessResponse(c, post.Likes)
+		utils.JsonSuccessResponse(c, PostLikes)
 		return
 	}
 
@@ -36,7 +36,7 @@ func GetPostLikes(c *gin.Context) {
 		return
 	}
 
-	err = utils.SetPostToCache(dbPost)
+	err = utils.SetPostToCache(dbPost,c)
 	if err != nil {
 		apiexception.AbortWithException(c, apiexception.ServerError, err)
 		return
